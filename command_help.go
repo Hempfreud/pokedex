@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandHelp(c *config) error {
+func commandHelp(c *config, arg string) error {
 	// Print the available commands and their descriptions
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")

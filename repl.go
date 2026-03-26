@@ -12,13 +12,14 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, string) error
 }
 
 type config struct {
 	pokeapiClient    pokeapi.Client
 	nextLocationsURL *string
 	prevLocationsURL *string
+	caughtPokemon    map[string]pokeapi.Pokemon
 }
 
 var commands map[string]cliCommand
@@ -54,6 +55,26 @@ func startRepl(c *config) {
 			description: "Display previous location",
 			callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore",
+			description: "List Pokemon in the current location",
+			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Catch a Pokemon in the current location",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "Inspect a caught Pokemon",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "List all caught Pokemon",
+			callback:    commandPokedex,
+		},
 	}
 	// Create a bufio.Scanner that reads from os.Stdin
 	scanner := bufio.NewScanner(os.Stdin)
@@ -76,7 +97,11 @@ func startRepl(c *config) {
 		// Update your REPL loop to use the "command" the user typed in to look up the callback function in the registry.
 		// If the command is found, call the callback (and print any errors that are returned).
 		if cmd, ok := commands[cleanedInput[0]]; ok {
-			err := cmd.callback(c)
+			arg := ""
+			if len(cleanedInput) > 1 {
+				arg = cleanedInput[1]
+			}
+			err := cmd.callback(c, arg)
 			if err != nil {
 				fmt.Printf("Error executing command: %s\n", err)
 			}

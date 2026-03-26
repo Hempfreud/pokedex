@@ -13,6 +13,7 @@ func main() {
 
 	c := &config{
 		pokeapiClient: client,
+		caughtPokemon: make(map[string]pokeapi.Pokemon),
 	}
 	startRepl(c)
 }
